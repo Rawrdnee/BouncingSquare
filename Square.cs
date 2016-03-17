@@ -8,7 +8,7 @@ using System.Drawing;
 
 namespace BouncingSquare
 {
-    public class Square: IDisposable
+    public class Square: Event, IDisposable
     {
         #region Private Members
         private Guid _id = Guid.Empty;
@@ -19,7 +19,7 @@ namespace BouncingSquare
         private int _yDir = 0;
         private Random _rnd = null;
         private Paddle _paddle = null;
-
+        private int _Value = 0;
 
 
         #endregion
@@ -51,6 +51,12 @@ namespace BouncingSquare
             _box.BackColor = Color.Black;
         }
 
+
+
+
+
+        #endregion
+        #region Private Methods
         private void Move()
         {
             Point location = _box.Location;
@@ -60,6 +66,9 @@ namespace BouncingSquare
             if (location.Y >= _form.Height - _box.Height)
             {
                 Dispose();
+                ScoreEventArgs e =
+                    new ScoreEventArgs(string.Empty, -this._Value);
+                RaiseEvent(this, e);
             }
             else if (location.Y <= 0)
             {
@@ -73,17 +82,15 @@ namespace BouncingSquare
             {
                 _xDir = -_xDir;
             }
-            else if (_paddle.Box.Bounds.IntersectsWith (_box.Bounds))
+            else if (_paddle.Box.Bounds.IntersectsWith(_box.Bounds))
             {
                 _yDir = -_yDir;
                 _xDir = -_xDir;
+                ScoreEventArgs e = new ScoreEventArgs(string.Empty, _Value);
+                RaiseEvent(this, e);
             }
-
-
         }
 
-        #endregion
-        #region Private Methods
         #endregion
         #region Event Handlers
 
@@ -106,12 +113,16 @@ namespace BouncingSquare
             _box.Width = 20;
             _box.Height = 20;
             _box.BackColor = Color.FromArgb(rnd.Next(0, 256), (rnd.Next(0, 256)), (rnd.Next(0, 256)));
+            _Value = rnd.Next(0, 6);
 
+            _box.Paint += _box_Paint;
             Point location = new Point();
 
             location.X = _rnd.Next(0, _form.Width - _box.Width);
             location.Y = _rnd.Next(0, _form.Height/8 - _box.Height);
             _box.Location = location;
+
+            _id = Guid.NewGuid();
 
             _form.Controls.Add(_box);
             _timer = new Timer();
@@ -127,6 +138,15 @@ namespace BouncingSquare
                 _yDir = rnd.Next(-30, 30);
             } while (_yDir == 0);
             }
+
+        private void _box_Paint(object sender, PaintEventArgs e)
+        {
+            using (Font myFont = new Font("Arial", 14, FontStyle.Bold))
+            {
+                e.Graphics.DrawString(_Value.ToString(),
+                    myFont, Brushes.Green, new Point(2, 0));
+            }
+        }
         #endregion
 
         #region Idisposable Support
@@ -158,8 +178,5 @@ namespace BouncingSquare
         #endregion
 
 
-
     }
-
-
-    }
+}

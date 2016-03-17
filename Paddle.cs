@@ -58,13 +58,14 @@ namespace BouncingSquare
         {
             get { return _box; }
         }
-        public Point Location
+        
+        public int Location
         {
             set
             {
                 Point location = _box.Location;
-                location = value;
-                _box.Location  = value;
+                location.X = value;
+                _box.Location  = location;
 
             }
         }
@@ -88,11 +89,12 @@ namespace BouncingSquare
             //Accesses the random number generator
             _rnd = rnd;
             //Determines the size of the object
-            Size size = new Size(100, 20);
+            Size size = new Size(200, 10);
             //Creates a variable for the width of the object
+            _box.Size = size;
             int x = (_form.Width/2 - _box.Width/2);
             //Creates a variable for the height of the object
-            int y = _form.Height - _box.Height;
+            int y = _form.Height - _box.Height*5;
             //Determines where the object will appear
             Point location = new Point(x, y);
             //Assigns a color to the object
@@ -105,7 +107,7 @@ namespace BouncingSquare
         }
         #endregion
         #region Construction 
-
+        
         #endregion
 
     }

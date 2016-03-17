@@ -14,6 +14,7 @@ namespace BouncingSquare
     {
         Paddle paddle = null;
         Random rnd = new Random();
+
         List<Square> squares = new List<Square>();
 
         public BouncingBall()
@@ -28,7 +29,7 @@ namespace BouncingSquare
 
         private void BouncingBall_MouseMove(object sender, MouseEventArgs e)
         {
-            paddle.Location = e.Location;
+            paddle.Location = e.Location.X;
         }
 
         private void BouncingBall_Load1(object sender, EventArgs e)
@@ -48,16 +49,43 @@ namespace BouncingSquare
                 Application.Exit();
             }
             else if (e.KeyData == Keys.N)
-            {
-                Square square = new Square(this, rnd, paddle);
                 
+            {
+                if (squares.Count < 6)
+                {
+                    Square square = new Square(this, rnd, paddle);
+                    squares.Add(square);
+                    square.score += Square_score;
+                }
             }
             else if (e.KeyData == Keys.Left || e.KeyData == Keys.Right)
             {
                 paddle.Key = e.KeyData; 
             }
         }
-             
-   }
+
+        private void Square_score(object sender, ScoreEventArgs e)
+        {
+            int score = Convert.ToInt32(lblScore.Text);
+            score += e.Points;
+            lblScore.Text = score.ToString();
+
+            if (e.Points <= 0)
+            {
+                Square sq = (Square)sender;
+                Guid id = sq.Id;
+
+                for (int i = 0; i < squares.Count; i++)
+                {
+                    if (squares[i].Id == id)
+                    {
+                        squares.RemoveAt(i);
+                        break;
+                    }
+                }
+            
+            }
+        }
+    }
 }
 
